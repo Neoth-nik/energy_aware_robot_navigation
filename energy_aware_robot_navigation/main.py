@@ -168,6 +168,10 @@ while running:
                 maze_gen.start_generation(start_row=random.randint(0, ROWS-1), 
                                          start_col=random.randint(0, COLS-1))
 
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    maze_gen.reset()
+
     # 2. Algorithm Step Update (animates 60 steps per second)
     if maze_gen.is_generating:
         # Step twice per frame for faster animation flow (adjust step calls as desired)
@@ -180,7 +184,7 @@ while running:
 
     # Status Banner
     status = "STATUS: GENERATING..." if maze_gen.is_generating else "STATUS: IDLE"
-    hud_text = font.render(f"Press 'G' to Generate Maze | {status}", True, TEXT_COLOR)
+    hud_text = font.render(f"Press 'G' to Generate Maze | 'R' to Reset | {status}", True, TEXT_COLOR)
     screen.blit(hud_text, (OFFSET_X, 15))
 
     # 4. Display & Clock

@@ -56,7 +56,7 @@ class PrimMazeGenerator:
         self.current_cell = None
 
     def start_generation(self, start_row=0, start_col=0):
-        """Initializes the Prim's algorithm generation process starting at top-left."""
+        """Initializes the Prim's algorithm. """
         self.reset()
         self.is_generating = True
 
@@ -144,7 +144,7 @@ class PrimMazeGenerator:
 
                 pygame.draw.rect(surface, color, (x, y, CELL_SIZE, CELL_SIZE))
 
-                # Draw cell walls (Skip exterior entrance/exit borders for clarity)
+                # Draw cell walls
                 if cell.walls['N'] and not (r == 0 and c == 0):
                     pygame.draw.line(surface, WALL_COLOR, (x, y), (x + CELL_SIZE, y), 2)
                 if cell.walls['E']:
@@ -153,6 +153,30 @@ class PrimMazeGenerator:
                     pygame.draw.line(surface, WALL_COLOR, (x, y + CELL_SIZE), (x + CELL_SIZE, y + CELL_SIZE), 2)
                 if cell.walls['W']:
                     pygame.draw.line(surface, WALL_COLOR, (x, y), (x, y + CELL_SIZE), 2)
+
+    # Call this function when making a maze-solving algorithm
+    def get_accessible_neighbors(self, cell):
+        """Returns a list of neighboring cells that can be reached 
+           from the given cell (i.e., no wall blocking the path)."""
+        accessible = []
+        r, c = cell.row, cell.col
+        
+        # Mapping directions to their row/col offsets
+        directions = {
+            'N': (-1, 0),
+            'E': (0, 1),
+            'S': (1, 0),
+            'W': (0, -1)
+        }
+        
+        for d, (dr, dc) in directions.items():
+            # Check if the wall in direction 'd' is carved (False means open)
+            if not cell.walls[d]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < self.rows and 0 <= nc < self.cols:
+                    accessible.append(self.grid[nr][nc])
+                    
+        return accessible
 
 
 # Instantiate generator

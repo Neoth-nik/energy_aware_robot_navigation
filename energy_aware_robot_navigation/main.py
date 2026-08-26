@@ -20,6 +20,8 @@ GRID_BG = (30, 34, 42)            # Unvisited Cell
 IN_MAZE_COLOR = (245, 247, 250)   # Carved Path
 FRONTIER_COLOR = (255, 127, 80)   # Active Frontier Wall/Cell (Coral/Orange)
 CURRENT_COLOR = (0, 210, 255)     # Current Active Cell (Electric Cyan)
+START_COLOR = (46, 204, 113)      # Start Cell (Green)
+END_COLOR = (231, 76, 60)         # End Cell (Red)
 WALL_COLOR = (15, 15, 20)         # Wall line color
 TEXT_COLOR = (200, 210, 225)      # UI Text
 
@@ -54,7 +56,7 @@ class PrimMazeGenerator:
         self.current_cell = None
 
     def start_generation(self, start_row=0, start_col=0):
-        """Initializes the Prim's algorithm generation process."""
+        """Initializes the Prim's algorithm generation process starting at top-left."""
         self.reset()
         self.is_generating = True
 
@@ -127,7 +129,11 @@ class PrimMazeGenerator:
                 y = OFFSET_Y + r * CELL_SIZE
 
                 # Dynamic background colors based on generation state
-                if cell.is_current:
+                if r == 0 and c == 0:
+                    color = START_COLOR  # Start (Green)
+                elif r == self.rows - 1 and c == self.cols - 1:
+                    color = END_COLOR    # End (Red)
+                elif cell.is_current:
                     color = CURRENT_COLOR
                 elif cell.is_frontier:
                     color = FRONTIER_COLOR
@@ -138,12 +144,12 @@ class PrimMazeGenerator:
 
                 pygame.draw.rect(surface, color, (x, y, CELL_SIZE, CELL_SIZE))
 
-                # Draw cell walls
-                if cell.walls['N']:
+                # Draw cell walls (Skip exterior entrance/exit borders for clarity)
+                if cell.walls['N'] and not (r == 0 and c == 0):
                     pygame.draw.line(surface, WALL_COLOR, (x, y), (x + CELL_SIZE, y), 2)
                 if cell.walls['E']:
                     pygame.draw.line(surface, WALL_COLOR, (x + CELL_SIZE, y), (x + CELL_SIZE, y + CELL_SIZE), 2)
-                if cell.walls['S']:
+                if cell.walls['S'] and not (r == self.rows - 1 and c == self.cols - 1):
                     pygame.draw.line(surface, WALL_COLOR, (x, y + CELL_SIZE), (x + CELL_SIZE, y + CELL_SIZE), 2)
                 if cell.walls['W']:
                     pygame.draw.line(surface, WALL_COLOR, (x, y), (x, y + CELL_SIZE), 2)
@@ -164,17 +170,14 @@ while running:
             
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_g:
-                # Start real-time generation on 'G' press
-                maze_gen.start_generation(start_row=random.randint(0, ROWS-1), 
-                                         start_col=random.randint(0, COLS-1))
+                # Start real-time generation starting at (0, 0)
+                maze_gen.start_generation(start_row=0, start_col=0)
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    maze_gen.reset()
+            elif event.key == pygame.K_r:
+                maze_gen.reset()
 
-    # 2. Algorithm Step Update (animates 60 steps per second)
+    # 2. Algorithm Step Update (animates steps)
     if maze_gen.is_generating:
-        # Step twice per frame for faster animation flow (adjust step calls as desired)
         maze_gen.step()
         maze_gen.step()
 

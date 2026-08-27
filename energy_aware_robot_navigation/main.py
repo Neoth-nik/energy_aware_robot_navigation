@@ -3,17 +3,20 @@ from maze import (
     WIDTH, HEIGHT, ROWS, COLS, OFFSET_X, BG_COLOR, TEXT_COLOR,
     PrimMazeGenerator
 )
-from pathfinding import BFSPathfinder
+from pathfinding import BFSPathfinder, AStarPathfinder
 
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Energy-Aware Robot Navigation Visualizer")
-font = pygame.font.SysFont("Consolas", 16, bold=True)
+pygame.display.set_caption("Robot Navigation Visualizer - BFS & A*")
+font = pygame.font.SysFont("Consolas", 15, bold=True)
 
-# Instantiate generator & pathfinder
+# Instantiate generator & pathfinders
 maze_gen = PrimMazeGenerator(ROWS, COLS)
-pathfinder = BFSPathfinder(maze_gen)
+bfs_solver = BFSPathfinder(maze_gen)
+astar_solver = AStarPathfinder(maze_gen)
+
+active_solver = None
 clock = pygame.time.Clock()
 
 running = True
@@ -26,28 +29,42 @@ while running:
             
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_g:
-                # Clear previous search state & generate fresh maze
-                pathfinder.reset()
+                bfs_solver.reset()
+                astar_solver.reset()
+                active_solver = None
                 maze_gen.start_generation(start_row=0, start_col=0)
 
             elif event.key == pygame.K_r:
-                pathfinder.reset()
+                bfs_solver.reset()
+                astar_solver.reset()
+                active_solver = None
                 maze_gen.reset()
 
-            elif event.key == pygame.K_s:
-                # Trigger BFS pathfinder only when maze isn't generating
+            elif event.key == pygame.K_b:
                 if not maze_gen.is_generating:
+                    bfs_solver.reset()
+                    astar_solver.reset()
+                    active_solver = bfs_solver
                     start_cell = maze_gen.grid[0][0]
                     goal_cell = maze_gen.grid[ROWS - 1][COLS - 1]
-                    pathfinder.start_search(start_cell, goal_cell)
+                    bfs_solver.start_search(start_cell, goal_cell)
+
+            elif event.key == pygame.K_a:
+                if not maze_gen.is_generating:
+                    bfs_solver.reset()
+                    astar_solver.reset()
+                    active_solver = astar_solver
+                    start_cell = maze_gen.grid[0][0]
+                    goal_cell = maze_gen.grid[ROWS - 1][COLS - 1]
+                    astar_solver.start_search(start_cell, goal_cell)
 
     # 2. Algorithm Step Updates (Animation)
     if maze_gen.is_generating:
         maze_gen.step()
         maze_gen.step()
-    elif pathfinder.is_searching:
-        pathfinder.step()
-        pathfinder.step()  # Step twice per frame for faster visualization
+    elif active_solver and active_solver.is_searching:
+        active_solver.step()
+        active_solver.step()
 
     # 3. Render Graphics
     screen.fill(BG_COLOR)
@@ -56,14 +73,16 @@ while running:
     # Status Banner
     if maze_gen.is_generating:
         status = "STATUS: GENERATING MAZE..."
-    elif pathfinder.is_searching:
-        status = "STATUS: RUNNING BFS..."
-    elif pathfinder.found_path:
-        status = "STATUS: PATH FOUND!"
+    elif active_solver and active_solver.is_searching:
+        solver_name = "BFS" if active_solver == bfs_solver else "A*"
+        status = f"STATUS: RUNNING {solver_name}..."
+    elif active_solver and active_solver.found_path:
+        solver_name = "BFS" if active_solver == bfs_solver else "A*"
+        status = f"STATUS: {solver_name} PATH FOUND!"
     else:
         status = "STATUS: IDLE"
 
-    hud_text = font.render(f"[G] Generate | [S] BFS Pathfind | [R] Reset | {status}", True, TEXT_COLOR)
+    hud_text = font.render(f"[G] Gen | [B] BFS | [A] A* | [R] Reset | {status}", True, TEXT_COLOR)
     screen.blit(hud_text, (OFFSET_X, 15))
 
     # 4. Display & Clock

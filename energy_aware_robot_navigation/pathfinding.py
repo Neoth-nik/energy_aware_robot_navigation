@@ -140,9 +140,16 @@ class AStarPathfinder:
                     self.counter += 1
                     heapq.heappush(self.open_set, (self.f_score[neighbor], self.counter, neighbor))
 
+    # Add this return inside _reconstruct_path() method in pathfinding.py:
     def _reconstruct_path(self):
         curr = self.goal_cell
+        path_cells = []
         while curr in self.parent:
             curr.is_path = True
+            path_cells.append(curr)
             curr = self.parent[curr]
         self.start_cell.is_path = True
+        path_cells.append(self.start_cell)
+    
+        path_cells.reverse() # Start to Goal order
+        return path_cells  

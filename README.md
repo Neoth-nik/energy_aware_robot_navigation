@@ -13,11 +13,11 @@ algorithms and eventually minimizing energy consumption.
 - A* pathfinding
 - 2D visualization using Pygame
 - Maze reset and regeneration
+- Add a simulated robot
+- Robot movement and animation
+- Visualize BFS and A* paths
 
 ## Planned Features
-- [ ] Add a simulated robot
-- [ ] Robot movement and animation
-- [ ] Visualize BFS and A* paths
 - [ ] Add distance and turn metrics
 - [ ] Develop an energy consumption model
 - [ ] Energy-aware path planning

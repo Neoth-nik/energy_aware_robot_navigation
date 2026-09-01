@@ -10,7 +10,7 @@ from robot import Robot
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Micromouse-Style Robot Navigation Visualizer")
+pygame.display.set_caption("Robot Navigation Visualizer")
 font = pygame.font.SysFont("Consolas", 15, bold=True)
 
 maze_gen = PrimMazeGenerator(ROWS, COLS)

@@ -118,7 +118,7 @@ while running:
     if mode == 'exploring':
         robot.update(speed=0.30)
     else:
-        robot.update(speed=0.18)
+        robot.update(speed=0.40)
     # 3. Render Graphics
     screen.fill(BG_COLOR)
     maze_gen.draw(screen)

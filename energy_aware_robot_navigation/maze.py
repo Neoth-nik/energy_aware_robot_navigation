@@ -67,6 +67,13 @@ class PrimMazeGenerator:
         
         self._add_cell_walls_to_frontier(start_cell)
 
+    def pause(self, cell):
+        self.pause()
+        self.is_generating = False
+        cell.row = self.pause
+        cell.col = self.pause
+        self.current_cell = True
+
     def _add_cell_walls_to_frontier(self, cell):
         r, c = cell.row, cell.col
         directions = [('N', -1, 0), ('E', 0, 1), ('S', 1, 0), ('W', 0, -1)]

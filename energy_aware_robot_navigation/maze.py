@@ -2,15 +2,27 @@ import pygame
 import random
 
 # Window and Grid Dimensions
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1100
+HEIGHT = 720
 ROWS = 25
 COLS = 25
 
-# Dynamically calculate cell size & position
-CELL_SIZE = min(WIDTH // COLS, (HEIGHT - 50) // ROWS)
-OFFSET_X = (WIDTH - (COLS * CELL_SIZE)) // 2
-OFFSET_Y = ((HEIGHT - 50) - (ROWS * CELL_SIZE)) // 2 + 50
+# Left info panel | right maze area
+PANEL_W = 340
+MAZE_AREA_W = WIDTH - PANEL_W
+MARGIN = 30
+
+# Dynamically calculate cell size & position (maze is centered in the RIGHT area)
+CELL_SIZE = min((MAZE_AREA_W - 2 * MARGIN) // COLS, (HEIGHT - 2 * MARGIN) // ROWS)
+OFFSET_X = PANEL_W + (MAZE_AREA_W - COLS * CELL_SIZE) // 2
+OFFSET_Y = (HEIGHT - ROWS * CELL_SIZE) // 2
+
+# Panel colors(R, G, B)
+PANEL_BG = (24, 26, 34)      # Dark blue gray
+PANEL_CARD = (34, 38, 48)    # Lighter Dark blue gray
+PANEL_BORDER = (55, 60, 75)  # Medium Dark slate gray
+ACCENT = (0, 210, 255)       # Sky Blue
+# If the contrast is dull feel free to change them
 
 # Visual Palette
 BG_COLOR = (18, 18, 24)        # Dark Theme Screen
@@ -66,13 +78,6 @@ class PrimMazeGenerator:
         start_cell.is_current = True
         
         self._add_cell_walls_to_frontier(start_cell)
-
-    def pause(self, cell):
-        self.pause()
-        self.is_generating = False
-        cell.row = self.pause
-        cell.col = self.pause
-        self.current_cell = True
 
     def _add_cell_walls_to_frontier(self, cell):
         r, c = cell.row, cell.col

@@ -61,12 +61,17 @@ class BFSPathfinder:
                 self.parent[neighbor] = current
                 self.queue.append(neighbor)
 
-    def _reconstruct_path(self):
-        curr = self.goal_cell
-        while curr in self.parent:
-            curr.is_path = True
-            curr = self.parent[curr]
+        def _reconstruct_path(self):
+            curr = self.goal_cell
+            path_cells = []
+            while curr in self.parent:
+                curr.is_path = True
+                path_cells.append(curr)
+                curr = self.parent[curr]
         self.start_cell.is_path = True
+        path_cells.append(self.start_cell)
+        path_cells.reverse()
+        return path_cells
 
 
 class AStarPathfinder:
